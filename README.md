@@ -82,10 +82,10 @@ project/
 
 ### Real Cases — No API Key Required
 
+You can see examples Dataset at the link: https://drive.google.com/drive/folders/1BCZK-HsabuwNKLUNrWwxNb0pgZqf70jo
+
 Streamed from `common-pile/caselaw_access_project` (HuggingFace).
 
-- `majority_chunk vs dissent_chunk` → **label=1** (structural guarantee)
-- `majority_chunk_A vs majority_chunk_B` → **label=0**
 
 To train and evaluate the system, we initially experimented with fully synthetic legal text generation. However, the fully synthetic data was kept at a small scale because we found that real-world, historically documented court opinions provided a significantly better, more coherent, and realistic rhetorical structure. 
 
@@ -106,6 +106,7 @@ Therefore, our final dataset was constructed using real-world judicial cases. Th
 Model Input:
 
 Claim A
+
 Claim B
 
 Model Output:
@@ -289,5 +290,6 @@ https://drive.google.com/drive/folders/1f8j0hzsMj6hVsQrKimtD5o-6l1Ih_ZZ7
 | `graph.html` | Interactive knowledge graph |
 | `qa_result.json` | Last Q&A result |
 
-
+## FULL Output Project Files 
+https://drive.google.com/drive/folders/1_mTIX1SjRMTBcvNhby7QvKOBshsdUW8y
 
