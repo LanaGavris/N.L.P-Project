@@ -89,6 +89,11 @@ Streamed from `common-pile/caselaw_access_project` (HuggingFace).
 
 To train and evaluate the system, we initially experimented with fully synthetic legal text generation. However, the fully synthetic data was kept at a small scale because we found that real-world, historically documented court opinions provided a significantly better, more coherent, and realistic rhetorical structure. 
 
+#### EDA 
+
+<img width="1289" height="396" alt="download (1)" src="https://github.com/user-attachments/assets/1a46d3b7-27bc-453b-8291-feee093c5fba" />
+
+
 Therefore, our final dataset was constructed using real-world judicial cases. The pipeline uses a hybrid labeling strategy:
 
 1. LLM-Assisted Automated Labeling: High-performance models (via OpenRouter/Gemini) were used to systematically annotate party positions and match arguments across the legal documents.
@@ -96,8 +101,7 @@ Therefore, our final dataset was constructed using real-world judicial cases. Th
 2. Human-in-the-Loop Validation: We then manually curated and verified a high-quality Gold Dataset of 100 diversified claim pairs to serve as the absolute ground truth for testing.
 
 
-3. BERT Fine-Tuning
-We fine-tune a BERT (bert-base-uncased) model for contradiction detection.
+3. BERT Fine-Tuning: We fine-tune a BERT (bert-base-uncased) model for contradiction detection.
 
 Model Input:
 
@@ -115,6 +119,16 @@ For evaluation, we created a manually annotated Gold Dataset containing 100 lega
 
 The fine-tuned model achieved an F1-score of 0.9972 on the contradiction detection task.
 
+<img width="1189" height="490" alt="download (5)" src="https://github.com/user-attachments/assets/20fc2629-d69b-4704-bea1-628ab870cf47" />
+
+<img width="896" height="396" alt="download (6)" src="https://github.com/user-attachments/assets/1ddb0c79-ed79-4450-82b9-40aad195abac" />
+
+#### human goldquantifies
+
+<img width="1189" height="490" alt="download (10)" src="https://github.com/user-attachments/assets/7c565b55-722e-4827-b444-78e8870baabe" />
+
+
+<img width="896" height="396" alt="download (8)" src="https://github.com/user-attachments/assets/28f386e0-9967-47c4-864a-b4b0a97cae9f" />
 
 ---
 
