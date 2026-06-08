@@ -1,0 +1,241 @@
+# Contradiction-Aware Legal Graph RAG
+### Adversarial Claim Detection & Graph-Enhanced Retrieval for Balanced Legal Reasoning
+*NLP Project · Gavris Svetlana*
+
+---
+
+## Research Question
+
+> Can contradiction-aware graph retrieval quantifiably improve **legal argument balance**, **factual faithfulness**, and **answer completeness** compared to standard semantic RAG and zero-shot reasoning?
+
+**Hypothesis:** Legal reasoning should explicitly model contradictory claims and the relationships between adversarial parties — not treat documents as independent text chunks.
+
+---
+
+## The Problem
+
+Standard vector RAG suffers from **semantic blindness** in adversarial legal domains:
+
+| Problem | Effect |
+|---|---|
+| Retrieves by similarity only | Ignores *who* is speaking |
+| Retrieval bias | Majority side dominates (more text) |
+| Averages contradictions | Opposing claims collapse into one answer |
+| No party awareness | Prosecution ≡ Defense ≡ Court |
+| One-sided context | LLM generates incomplete or hallucinated answers |
+
+---
+
+## System Architecture
+
+```
+Legal Case Document (full text)
+        ↓
+Claim Extraction + Party Tagging
+(prosecution · defense · court · majority · dissent)
+        ↓
+BERT Fine-Tuning
+[CLS] claim_a [SEP] claim_b [SEP] → contradiction / not
+        ↓
+Legal Knowledge Graph
+Nodes: claim, evidence, court_ruling
+Edges: CONTRADICTS (BERT) · SUPPORTS · RESOLVED_BY · HAS_EVIDENCE
+        ↓
+Graph-Guided Retrieval
+Semantic search → traverse CONTRADICTS edges → both sides surfaced
+        ↓
+LLM Answer Generation (Gemini / OpenRouter)
+        ↓
+Structured Output:
+  PROSECUTION position
+  DEFENSE counter-argument
+  IDENTIFIED contradictions (BERT-scored)
+  COURT resolution
+  graph.html (interactive PyVis visualization)
+```
+
+---
+
+## Project Structure
+
+```
+project/
+├── Main_Pipeline_v3.ipynb      ← single notebook, run cells in order
+│
+├── llm_client.py               ← unified LLM client (Gemini + OpenRouter)
+├── google_llm.py               ← compatibility shim → delegates to llm_client
+├── hf_dissent_fetcher.py       ← streams caselaw_access_project (HuggingFace)
+├── synthetic_augmenter.py      ← generates 10 structured synthetic cases via LLM
+├── data_processor.py           ← case-level split + hybrid validation
+├── bert_finetuner.py           ← fine-tunes bert-base-uncased
+├── knowledge_graph.py          ← builds Legal KG from BERT predictions
+├── graph_rag_pipeline.py       ← 6 ablation RAG systems (all-MiniLM-L6-v2 embedder)
+├── evaluation_pipeline.py      ← blind LLM judge + ablation evaluation
+├── model_evaluator.py          ← classification metrics + human gold evaluation
+├── results_analysis.py         ← bootstrap CI + error analysis + report paragraph
+├── legal_qa.py                 ← interactive Q&A + PyVis subgraph output
+└── human_pairs.json            ← 100 manually annotated contradiction pairs
+```
+
+
+## Dataset
+
+### Real Cases — No API Key Required
+
+Streamed from `common-pile/caselaw_access_project` (HuggingFace).
+
+- `majority_chunk vs dissent_chunk` → **label=1** (structural guarantee)
+- `majority_chunk_A vs majority_chunk_B` → **label=0**
+
+To train and evaluate the system, we initially experimented with fully synthetic legal text generation. However, the fully synthetic data was kept at a small scale because we found that real-world, historically documented court opinions provided a significantly better, more coherent, and realistic rhetorical structure. 
+
+Therefore, our final dataset was constructed using real-world judicial cases. The pipeline uses a hybrid labeling strategy:
+
+1. LLM-Assisted Automated Labeling: High-performance models (via OpenRouter/Gemini) were used to systematically annotate party positions and match arguments across the legal documents.
+
+2. Human-in-the-Loop Validation: We then manually curated and verified a high-quality Gold Dataset of 100 diversified claim pairs to serve as the absolute ground truth for testing.
+
+
+3. BERT Fine-Tuning
+We fine-tune a BERT (bert-base-uncased) model for contradiction detection.
+
+Model Input:
+
+Claim A
+Claim B
+Model Output:
+
+Contradiction
+or
+Non-Contradiction
+The model is trained on synthetic and manually validated legal claim pairs.
+
+For evaluation, we created a manually annotated Gold Dataset containing 100 legal claim pairs spanning multiple legal domains, including financial fraud, corporate crime, cybercrime, and regulatory litigation.
+
+The fine-tuned model achieved an F1-score of 0.9972 on the contradiction detection task.
+
+
+---
+
+## Knowledge Graph
+
+Built from **BERT predictions** — not raw structural labels.
+
+The extracted claims become nodes in a legal knowledge graph.
+
+
+**Edge construction:**
+- `CONTRADICTS` — BERT p > 0.65 for opposing-party pairs
+- `SUPPORTS` — same-party cosine similarity > 0.80 (all-MiniLM-L6-v2)
+- `RESOLVED_BY` — court ruling → disputed defense claims
+- `HAS_EVIDENCE` — prosecution claims → evidence nodes
+
+---
+
+## Results
+
+### Contradiction Detection
+
+
+
+### Ablation Study — Final Results
+
+**Protocol:** Blind LLM judge · 8 queries grounded in BERT-predicted contradictions
+· answers anonymized + order-randomized · same LLM / same prompt / same 600-token
+budget across all 6 systems · N=8 verdicts per system.
+
+![alt text](image.png)
+
+![alt text](image-1.png)
+
+#### Key Takeaways
+
+**Full Graph RAG is the clear winner (avg=0.7750):**
+
+- **Contradiction Coverage: 0.95** — highest by a large margin (+0.41 over No CONTRADICTS,
+  +0.58 over Standard RAG). BERT-predicted CONTRADICTS edges are the decisive factor
+  that forces the system to surface opposing claims.
+
+- **Party Coverage: 0.65** — best among all systems. Graph traversal ensures both
+  prosecution and defense positions appear in every answer.
+
+- **Faithfulness: 0.8125** — second highest, confirming that structured retrieval
+  reduces hallucination compared to flat cosine search.
+
+**Removing CONTRADICTS edges (System 2) drops avg by 0.258 points** — the single
+largest ablation gap, directly proving the value of BERT-predicted contradiction edges.
+
+**Rule-based edges (System 3, avg=0.4323)** score the lowest among graph variants.
+Negation patterns designed for prosecution/defense language produce 0 CONTRADICTS edges
+on majority/dissent text. This confirms that fine-tuned BERT is essential —
+rule-based heuristics do not generalize to appellate judicial writing style.
+
+**Standard RAG Top-10 (avg=0.6250)** comes second overall, benefiting from more
+retrieved context. However, its Contradiction Coverage (0.50) remains 0.45 points
+below Full Graph RAG — it cannot reliably surface adversarial claim pairs
+without graph traversal.
+
+---
+
+## Interactive Q&A
+
+```python
+# After QA-SETUP:
+QUESTION = "Did the defendant knowingly misuse customer funds?"
+result = qa.ask(QUESTION, save_graph=True, graph_filename="graph.html")
+result.print()       # Prosecution → Defense → Court structured report
+result.show_graph()  # Interactive PyVis visualization (Colab inline)
+```
+
+**Example output:**
+
+```
+[LegalQA] Processing: Did the defendant knowingly misuse customer funds?...
+  Retrieved 8 nodes
+  Prosecution claims: 8
+  Defense claims:     0
+  Contradictions:     16
+  [OpenRouter] Auto-selected: poolside/laguna-xs.2-20260421:free
+  Graph saved: ./graph.html (24 nodes)
+
+════════════════════════════════════════════════════════════════════
+ QUESTION: Did the defendant knowingly misuse customer funds?
+════════════════════════════════════════════════════════════════════
+**PROSECUTION POSITION:**
+The prosecution argues defendant knowingly filed materially false financial statements with the SEC to inflate stock price and deliberately concealed material risks while using investor funds for personal enrichment, asserting intentional fraud through deceptive financial reporting.
+
+**DEFENSE COUNTER-ARGUMENT:**
+The defense contends all financial statements were prepared by independent auditors and defendant relied on their professional judgment, argues defendant had no knowledge that accounting practices were improper under GAAP, and maintains the Medical clinic owner acted in good faith believing all representations to investors were accurate, directly contradicting the prosecution's claims of knowing misconduct.
+
+**COURT RESOLUTION:**
+The jury finds defendant guilty, and the Court finds the evidence of knowing misrepresentation overwhelming, establishing defendant's sophistication and intent despite defense arguments.
+</assistant>
+
+```
+
+**graph.html legend:**
+
+
+
+
+## Output Files 
+
+https://drive.google.com/drive/folders/1f8j0hzsMj6hVsQrKimtD5o-6l1Ih_ZZ7
+
+| File | Contents |
+|---|---|
+| `dissent_cases.json` |  real dissent case pairs |
+| `train/val/test_split.json` | Labeled pairs by split |
+| `bert_model/best_model/` | Fine-tuned BERT checkpoint |
+| `legal_kg.pkl` | Serialized knowledge graph |
+| `eval_queries.json` | 8 LLM-generated evaluation queries |
+| `judge_verdicts_checkpoint.json` | Ablation verdicts (per session) |
+| `full_evaluation_results_8q.json` | Complete ablation results |
+| `classification_results_structural.json` | BERT metrics on structural gold |
+| `classification_results_human.json` | BERT metrics on human expert gold |
+| `ablation_results_8q.png` | Ablation bar chart + score heatmap |
+| `graph.html` | Interactive knowledge graph |
+| `qa_result.json` | Last Q&A result |
+
+
+
