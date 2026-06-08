@@ -103,6 +103,7 @@ Model Input:
 
 Claim A
 Claim B
+
 Model Output:
 
 Contradiction
@@ -144,9 +145,10 @@ The extracted claims become nodes in a legal knowledge graph.
 · answers anonymized + order-randomized · same LLM / same prompt / same 600-token
 budget across all 6 systems · N=8 verdicts per system.
 
-![alt text](image.png)
+<img width="1280" height="255" alt="image" src="https://github.com/user-attachments/assets/e0a5463b-1580-4c18-91f7-b3bf85b72ade" />
 
-![alt text](image-1.png)
+<img width="1280" height="287" alt="image" src="https://github.com/user-attachments/assets/a4a18448-0147-4390-ab74-7d492f6561f6" />
+
 
 #### Key Takeaways
 
@@ -213,10 +215,14 @@ The jury finds defendant guilty, and the Court finds the evidence of knowing mis
 
 ```
 
+
+
+
 **graph.html legend:**
 
+<img width="654" height="247" alt="Снимок 4" src="https://github.com/user-attachments/assets/95d0b667-b3c2-42e4-8abd-9bb8d318c85b" />
 
-
+https://colab.research.google.com/drive/1LvLlrxdz8WbHDEYLmlqswChuKiDV8TM6#scrollTo=7yWUKf-cnWIe&fullscreenOutput=true
 
 ## Output Files 
 
