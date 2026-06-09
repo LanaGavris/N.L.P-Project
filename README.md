@@ -119,6 +119,7 @@ The model is trained on synthetic and manually validated legal claim pairs.
 For evaluation, we created a manually annotated Gold Dataset containing 100 legal claim pairs spanning multiple legal domains, including financial fraud, corporate crime, cybercrime, and regulatory litigation.
 
 The fine-tuned model achieved an F1-score of 0.9972 on the contradiction detection task.
+
 #### 1.structural test set quantifies
 
 <img width="1189" height="490" alt="download (5)" src="https://github.com/user-attachments/assets/20fc2629-d69b-4704-bea1-628ab870cf47" />
