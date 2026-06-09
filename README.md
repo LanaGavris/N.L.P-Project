@@ -103,6 +103,8 @@ Therefore, our final dataset was constructed using real-world judicial cases. Th
 
 3. BERT Fine-Tuning: We fine-tune a BERT (bert-base-uncased) model for contradiction detection.
 
+<img width="592" height="592" alt="image" src="https://github.com/user-attachments/assets/e34a2b38-04da-4538-a85e-3e208e711d5a" />
+
 Model Input:
 
 Claim A
@@ -284,9 +286,9 @@ The jury finds defendant guilty, and the Court finds the evidence of knowing mis
 
 **graph.html legend:**
 
-<img width="654" height="247" alt="Снимок 4" src="https://github.com/user-attachments/assets/95d0b667-b3c2-42e4-8abd-9bb8d318c85b" />
+<img width="737" height="436" alt="fin 5" src="https://github.com/user-attachments/assets/6c3d0d3a-9472-4452-a2ce-b03540a8fe0f" />
 
-https://colab.research.google.com/drive/1LvLlrxdz8WbHDEYLmlqswChuKiDV8TM6#scrollTo=7yWUKf-cnWIe&fullscreenOutput=true
+https://colab.research.google.com/drive/1xyw8vGf_PB0DQ5j8IXSiqptJnXfi5j1o#scrollTo=7yWUKf-cnWIe&fullscreenOutput=true
 
 ## Output Files 
 
