@@ -122,6 +122,7 @@ Claim B
 Contradiction
 or
 Non-Contradiction
+
 The model is trained on synthetic and manually validated legal claim pairs.
 
 For evaluation, we created a manually annotated Gold Dataset containing 100 legal claim pairs spanning multiple legal domains, including financial fraud, corporate crime, cybercrime, and regulatory litigation.
