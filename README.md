@@ -1,6 +1,6 @@
 # Contradiction-Aware Legal Graph RAG
 ### Adversarial Claim Detection & Graph-Enhanced Retrieval for Balanced Legal Reasoning
-*NLP Project · Gavris Svetlana*
+*Gavris Svetlana · Vlada Savitski*
 
 ---
 
@@ -410,7 +410,7 @@ Graph saved to Drive: /content/drive/MyDrive/nlp/results/graph.html
 
 <img width="737" height="436" alt="fin 5" src="https://github.com/user-attachments/assets/6c3d0d3a-9472-4452-a2ce-b03540a8fe0f" />
 
-https://colab.research.google.com/drive/1xyw8vGf_PB0DQ5j8IXSiqptJnXfi5j1o#scrollTo=7yWUKf-cnWIe&fullscreenOutput=true
+#### You can download and open it in the main graph.html
 
 ## Output Files 
 
